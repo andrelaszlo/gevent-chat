@@ -45,4 +45,5 @@ The screenshot below shows the author chatting with himself:
 * It feels slow, maybe because of urwid. Do some profiling.
 * More server features like chat rooms, private messages etc
 * Think about security :D
+* Handle client connection state better
 * ...
