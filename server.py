@@ -10,7 +10,21 @@ class ChatServer(DatagramServer):
 
     def handle(self, data, address):
         logging.debug('%s: received %r' % (address[0], data))
-        self.socket.sendto(data.upper(), address)
+
+        if data == 'HELO':
+            # Handshake
+            self.clients.append(address)
+            self.socket.sendto('OHAI\x00', address)
+            return
+
+        self.broadcast(address, data)
+
+    def broadcast(self, origin, message):
+        for address in self.clients:
+            if address == origin:
+                continue
+            logging.debug("sending %r to %r" % (message, address))
+            self.socket.sendto(message, address)
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
