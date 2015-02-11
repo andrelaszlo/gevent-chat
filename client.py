@@ -3,7 +3,8 @@ from urwid import ListBox, SimpleFocusListWalker, Frame, MainLoop, Edit, Text
 from urwid_geventloop import GeventLoop
 
 class ChatMessages(ListBox):
-    def __init__(self):
+    def __init__(self, chat):
+        self.chat = chat
         self.walker = SimpleFocusListWalker([])
         super(ChatMessages, self).__init__(self.walker)
 
@@ -13,23 +14,32 @@ class ChatMessages(ListBox):
 
 class ChatInput(Edit):
 
-    def setup(self, messages):
-        self.messages = messages
-        return self
+    def __init__(self, chat):
+        self.chat = chat
+        super(ChatInput, self).__init__(caption='> ')
 
     def keypress(self, size, key):
         if key == 'enter':
-            self.messages.add(self.get_edit_text())
+            self.chat.output.add(self.get_edit_text())
             self.set_edit_text('')
         super(ChatInput, self).keypress(size, key)
 
-output = ChatMessages()
-for i in range(100):
-    output.add("Test message %d" % i)
+class Chat(object):
 
-message = ChatInput(caption='> ').setup(output)
+    def __init__(self):
+        self.output = ChatMessages(self)
+        self.message = ChatInput(self)
+        self.window = Frame(
+            body=self.output,
+            footer=self.message,
+            focus_part='footer'
+        )
 
-window = Frame(body=output, footer=message, focus_part='footer')
-main_loop = MainLoop(window, event_loop=GeventLoop())
-#gevent.spawn(background_loop)
-main_loop.run()
+    def run(self):
+        for i in range(100):
+            self.output.add("Test message %d" % i)
+        main_loop = MainLoop(self.window, event_loop=GeventLoop())
+        main_loop.run()
+
+if __name__ == '__main__':
+    Chat().run()
