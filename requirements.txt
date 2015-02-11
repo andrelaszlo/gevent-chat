@@ -1,0 +1,4 @@
+gevent==1.0.1
+greenlet==0.4.5
+urwid==1.3.0
+-e git+https://github.com/what-studio/urwid-geventloop.git@fd1bff3#egg=urwid-geventloop
