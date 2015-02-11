@@ -5,15 +5,17 @@ from gevent.server import DatagramServer
 class ChatServer(DatagramServer):
 
     def __init__(self, *args):
-        self.clients = []
+        self.clients = set()
         super(ChatServer, self).__init__(*args)
 
     def handle(self, data, address):
         logging.debug('%s: received %r' % (address[0], data))
 
+        if address not in self.clients:
+            self.clients.add(address)
+
         if data == 'HELO':
             # Handshake
-            self.clients.append(address)
             self.socket.sendto('OHAI\x00', address)
             return
 
