@@ -1,9 +1,21 @@
 import gevent
-import urwid
+from urwid import ListBox, SimpleFocusListWalker, Frame, MainLoop, Edit, Text
 from urwid_geventloop import GeventLoop
 
-txt = urwid.Text(u"Hello World")
-fill = urwid.Filler(txt, 'top')
-main_loop = urwid.MainLoop(fill, event_loop=GeventLoop())
+class ChatMessages(ListBox):
+    def __init__(self):
+        self.walker = SimpleFocusListWalker([])
+        super(ChatMessages, self).__init__(self.walker)
+
+    def add(self, message):
+        self.walker.append(Text(message))
+        self.set_focus(len(self.walker)-1)
+
+for i in range(100):
+    output.add("Test message %d" % i)
+
+message = Edit(caption='> ', edit_text="")
+window = Frame(body=output, footer=message, focus_part='footer')
+main_loop = MainLoop(window, event_loop=GeventLoop())
 #gevent.spawn(background_loop)
 main_loop.run()
